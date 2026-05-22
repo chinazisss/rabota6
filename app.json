@@ -1,29 +1,39 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { styles } from './styles'; 
+import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
+import { styles } from './styles';
 
 export default function App() {
   const [title, setTitle] = useState('');
   const [text, setText] = useState('');
+  const [notes, setNotes] = useState([]);
+
+  const addNote = () => {
+    if (title.trim() === '' || text.trim() === '') return;
+    const newNote = { id: Date.now().toString(), title, text };
+    setNotes([newNote, ...notes]);
+    setTitle('');
+    setText('');
+  };
 
   return (
     <View style={styles.container}>
-      <TextInput 
-        style={styles.input} 
-        placeholder="Заголовок заметки" 
-        value={title} 
-        onChangeText={setTitle} 
-      />
-      <TextInput 
-        style={styles.input} 
-        placeholder="Текст заметки" 
-        value={text} 
-        onChangeText={setText} 
-        multiline 
-      />
-      <TouchableOpacity style={styles.button}>
+      <TextInput style={styles.input} placeholder="Заголовок заметки" value={title} onChangeText={setTitle} />
+      <TextInput style={styles.input} placeholder="Текст заметки" value={text} onChangeText={setText} multiline />
+      
+      <TouchableOpacity style={styles.button} onPress={addNote}>
         <Text style={styles.buttonText}>Добавить заметку</Text>
       </TouchableOpacity>
+
+      <FlatList
+        data={notes}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.noteItem}>
+            <Text style={styles.noteTitle}>{item.title}</Text>
+            <Text style={styles.noteText}>{item.text}</Text>
+          </View>
+        )}
+      />
     </View>
   );
 }
